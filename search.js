@@ -1,16 +1,14 @@
-
-
 var path = require('path'), fs=require('fs');
 
 var currentWorkingDir = process.cwd();
 var extension = process.argv[2];
-var sub_string = process.argv[3];
+var a_string = process.argv[3];
+
 
 function search(startPath, arr) {
 
 	// find all files in base folder
-	var files=fs.readdirSync(startPath);
-
+	var files = fs.readdirSync(startPath);
 
 	for(var i=0;i<files.length;i++){
 
@@ -23,14 +21,16 @@ function search(startPath, arr) {
 		// if  file is a folder
 		if (stat.isDirectory()){
             search(filename, arr);
-        } 
+        } else {
+        	// Check extension
+        	if (path.extname(filename) == '.' + extension){
 
-    	// if is a file
-		// 1. check extension 
-		// 2. check substring 
-		
-        else if (filename.endsWith(extension) && filename.includes(sub_string)) {
-			arr.push(filename);
+        		// Read file content
+        		const data = fs.readFileSync(filename)
+        		if(data.indexOf(a_string) >= 0){
+        			arr.push(filename)
+        		}
+        	}
         }
 	}
 	return arr
@@ -38,8 +38,8 @@ function search(startPath, arr) {
 
 
 var res = search(currentWorkingDir, []);
-//  print to screen
 
+//  print to screen
 if (res.length == 0) {
 	console.log('No file was found')
 } else {
